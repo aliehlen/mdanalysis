@@ -13,15 +13,20 @@ The rules for this file:
   * release numbers follow "Semantic Versioning" http://semver.org
 
 ------------------------------------------------------------------------------
-mm/dd/yy
-  * 0.19.3
+mm/dd/yy richardjgowers
+  * 0.20.0
+
+Enhancements
+  * Added analysis.polymer.sort_backbone to rearrange backbone atoms into
+    sequential order (bondwise)
 
 Fixes
   * fixed lib.nsgrid segfault for coordinates very close to the box boundary
     (Issue #2132, PR #2136)
 
 Deprecations
-
+  * analysis.polymer.PersistenceLength no longer requires the perform_fit()
+    method to be used, this is done automatically in run()
 
 11/06/18 richardjgowers
   * 0.19.2
