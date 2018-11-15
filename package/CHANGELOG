@@ -13,7 +13,7 @@ The rules for this file:
   * release numbers follow "Semantic Versioning" http://semver.org
 
 ------------------------------------------------------------------------------
-mm/dd/yy richardjgowers
+mm/dd/yy mattwthompson, richardjgowers
   * 0.20.0
 
 Enhancements
