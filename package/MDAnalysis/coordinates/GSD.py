@@ -117,9 +117,31 @@ class GSDReader(base.ReaderBase):
 
         # set frame box dimensions
         self.ts.dimensions = myframe.configuration.box
-        for i in range(3,6) :
-            self.ts.dimensions[i] = np.arccos(self.ts.dimensions[i]) * 180.0 / np.pi
-
+        
+        # this is not how you get angles, according to the hoomd docs
+        # https://hoomd-blue.readthedocs.io/en/stable/box.html?highlight=box%20triclinic%20
+#        for i in range(3,6) :
+#            self.ts.dimensions[i] = np.arccos(self.ts.dimensions[i]) * 180.0 / np.pi
+        
+        self.ts.tilt_factors = self.ts.dimensions[3:6].copy()
+        
+        a1a2 = self.ts.dimensions[3] / \
+                np.sqrt(1 + self.ts.dimensions[3]**2)
+        a1a3 = self.ts.dimensions[4] / \
+                np.sqrt(1 + self.ts.dimensions[4]**2 + self.ts.dimensions[5]**2)
+        a2a3 = (self.ts.dimensions[3]*self.ts.dimensions[4] + self.ts.dimensions[5] )/ \
+                (np.sqrt(1 + self.ts.dimensions[3]**2)* \
+                 np.sqrt(1 + self.ts.dimensions[4]**2 + self.ts.dimensions[5]**2))
+                
+        a1a2 = np.arccos(a1a2) * 180.0 / np.pi # gamma
+        a1a3 = np.arccos(a1a3) * 180.0 / np.pi # beta
+        a2a3 = np.arccos(a2a3) * 180.0 / np.pi # alpha   
+        
+        self.ts.dimensions[3] = a2a3
+        self.ts.dimensions[4] = a1a3
+        self.ts.dimensions[5] = a1a2
+        
+                 
         # set particle positions
         frame_positions = myframe.particles.position
         n_atoms_now = frame_positions.shape[0]
