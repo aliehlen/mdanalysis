@@ -53,6 +53,8 @@ Classes
 """
 from __future__ import absolute_import
 
+import pandas as pd
+
 import os
 if os.name != 'nt':
     # not supported on windows
@@ -150,17 +152,32 @@ class GSDParser(TopologyReaderBase):
                 else:
                     attrs[attrname] = attr(vals)
 
-            # get body ids to set residue number and ids
-            blist = snap.particles.body.astype(np.int64)
-            bodies = np.unique(blist).astype(np.int32)
-            # this fixes the fact that the Topology constructor gets stuck in an
-            # infinite loop if any resid is negative.
-            if (blist<0).any() :
-                m = blist.min()
-                blist += abs(m)
-            bodies = np.unique(blist).astype(np.int32)
-            nbodies = bodies.size
+#            # get body ids to set residue number and ids
+#            blist = snap.particles.body.astype(np.int64)
+#            bodies = np.unique(blist).astype(np.int32)
+#            
+#            # this fixes the fact that the Topology constructor gets stuck in an
+#            # infinite loop if any resid is negative.
+#            if (blist<0).any() :
+#                m = blist.min()
+#                blist += abs(m)
+#            bodies = np.unique(blist).astype(np.int32)
+#            nbodies = bodies.size
 
+
+        # I think what we really want is a list of res indexes and then 
+        # a list of what res each atom is on (indexed to res num)
+        # there is def a faster way to do this (merge....)
+
+        gsd_bodies = snap.particles.body
+        unique_bodies = np.unique(gsd_bodies) 
+        map_df = pd.DataFrame({'new_id': list(range(0, len(unique_bodies)))},
+                index=unique_bodies)
+        
+        blist = np.array(map_df.loc[gsd_bodies]['new_id'].values)
+        bodies = np.unique(blist)
+        nbodies = bodies.size
+        
         attrs = list(attrs.values())
         attrs.append(Atomnames(np.array(atypes, dtype=object)))
         attrs.append(Atomids(np.arange(natoms) + 1))
