@@ -209,11 +209,13 @@ class _TopologyAttrContainer(object):
             newcls._SETATTR_WHITELIST = {
                 'positions', 'velocities', 'forces', 'dimensions',
                 'atoms', 'residue', 'residues', 'segment', 'segments',
+                'images' # AE hack
             }
         else:
             newcls._SETATTR_WHITELIST = {
                 'position', 'velocity', 'force', 'dimensions',
                 'atoms', 'residue', 'residues', 'segment',
+                'image' # AE hack
             }
 
         return newcls
@@ -2477,7 +2479,18 @@ class AtomGroup(GroupBase):
     def positions(self, values):
         ts = self.universe.trajectory.ts
         ts.positions[self.ix, :] = values
-
+        
+    # AE hack (start)    
+    @property
+    def images(self):        
+        return self.universe.trajectory.ts.images[self.ix]
+    
+    @images.setter
+    def images(self, values):
+        ts = self.universe.trajectory.ts
+        ts.images[self.ix, :] = values    
+    # AE hack (end) 
+    
     @property
     def velocities(self):
         """Velocities of the :class:`Atoms<Atom>` in the :class:`AtomGroup`.

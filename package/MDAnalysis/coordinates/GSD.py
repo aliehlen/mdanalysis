@@ -129,6 +129,11 @@ class GSDReader(base.ReaderBase):
                 " topology!"%(frame, n_atoms_now, self.n_atoms))
         else :
             self.ts.positions = frame_positions
+            
+        # AE hack
+        self.ts.images = myframe.particles.image
+        self.ts.velocities = myframe.particles.velocity
+            
         return self.ts
 
     def _read_next_timestep(self) :
